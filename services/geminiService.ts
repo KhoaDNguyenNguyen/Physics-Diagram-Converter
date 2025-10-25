@@ -1,14 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { DiagramAnalysisResponse } from "../types";
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
-
 const fileToGenerativePart = async (file: File) => {
   const base64EncodedDataPromise = new Promise<string>((resolve) => {
     const reader = new FileReader();
@@ -20,8 +12,31 @@ const fileToGenerativePart = async (file: File) => {
   };
 };
 
-export const analyzeDiagram = async (imageFile: File): Promise<DiagramAnalysisResponse> => {
+export const validateApiKey = async (apiKey: string): Promise<boolean> => {
+  if (!apiKey) return false;
   try {
+    const ai = new GoogleGenAI({ apiKey });
+    // Use a lightweight model and a minimal prompt to validate the key
+    // This is a fast and cost-effective way to check for authentication errors.
+    await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: 'h'
+    });
+    return true;
+  } catch (error) {
+    console.error("API Key validation failed:", error);
+    return false;
+  }
+};
+
+
+export const analyzeDiagram = async (imageFile: File, apiKey: string): Promise<DiagramAnalysisResponse> => {
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please provide a valid key.");
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey });
     const imagePart = await fileToGenerativePart(imageFile);
     
     const textPart = {

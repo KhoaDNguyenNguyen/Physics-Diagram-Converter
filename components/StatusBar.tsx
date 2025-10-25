@@ -31,10 +31,6 @@ const StatusBar: React.FC<StatusBarProps> = ({ status, error }) => {
       return null;
   }
 
-  // FIX: Removed the redundant `if (status === AnalysisStatus.IDLE)` check.
-  // The `default` case in the switch statement already handles the `IDLE` state by returning null.
-  // This caused a TypeScript error because the condition would always be false after the switch statement.
-
   return (
     <div className={`mt-8 p-4 rounded-lg text-center font-medium ${bgColor} ${textColor} transition-all`}>
       {message}

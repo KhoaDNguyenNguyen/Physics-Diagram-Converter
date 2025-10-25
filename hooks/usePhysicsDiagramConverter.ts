@@ -48,7 +48,7 @@ const generateSvgFromComponents = (
 };
 
 
-export const usePhysicsDiagramConverter = () => {
+export const usePhysicsDiagramConverter = (apiKey: string) => {
   const [status, setStatus] = useState<AnalysisStatus>(AnalysisStatus.IDLE);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -160,14 +160,14 @@ export const usePhysicsDiagramConverter = () => {
   }, [resetState]);
 
   const handleConvert = useCallback(async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || !apiKey) return;
 
     setStatus(AnalysisStatus.ANALYZING);
     setError(null);
     setHistory({ past: [], present: null, future: [] });
 
     try {
-      const result: DiagramAnalysisResponse = await analyzeDiagram(selectedFile);
+      const result: DiagramAnalysisResponse = await analyzeDiagram(selectedFile, apiKey);
       setHistory({ past: [], present: result.components, future: [] });
       setViewBox(result.viewBox);
       setStatus(AnalysisStatus.SUCCESS);
@@ -176,7 +176,7 @@ export const usePhysicsDiagramConverter = () => {
       setError(errorMessage);
       setStatus(AnalysisStatus.ERROR);
     }
-  }, [selectedFile]);
+  }, [selectedFile, apiKey]);
 
   const handleDownload = useCallback(() => {
     if (!svgContent) return;
