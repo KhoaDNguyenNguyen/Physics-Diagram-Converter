@@ -1,0 +1,5 @@
+{
+  "name": "Physics Diagram Converter",
+  "description": "An application that uses AI to convert uploaded images of physics diagrams into scalable vector graphics (SVG).",
+  "requestFramePermissions": []
+}
